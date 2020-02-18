@@ -9,3 +9,9 @@ SELECT * FROM tbl_absen INNER JOIN tbl_siswa ON tbl_siswa.id_siswa = tbl_absen.i
 
 --cek absen yang udah di validasi
 SELECT * FROM tbl_absen WHERE id_absen IN (SELECT id_absen FROM tbl_validasi);
+
+--daftar nama siswa dan kehadiran dan validasi 
+SELECT
+    tbl_siswa.nama_siswa,
+    tbl_kelas.nama_kelas,
+    IF(tbl_absen.id_absen IS NOT NULL,"HADIR","TIDAK HADIR") AS Kehadiran,
