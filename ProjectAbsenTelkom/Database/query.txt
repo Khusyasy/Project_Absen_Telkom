@@ -9,3 +9,59 @@ SELECT * FROM tbl_absen INNER JOIN tbl_siswa ON tbl_siswa.id_siswa = tbl_absen.i
 
 --cek absen yang udah di validasi
 SELECT * FROM tbl_absen WHERE id_absen IN (SELECT id_absen FROM tbl_validasi);
+
+--daftar nama siswa dan kehadiran dan validasi 
+SELECT
+    tbl_siswa.nama_siswa,
+    tbl_kelas.nama_kelas,
+    IF(tbl_absen.id_absen IS NOT NULL,"HADIR","TIDAK HADIR") AS Kehadiran,
+    IF(tbl_absen.id_absen IS NOT NULL,IF(tbl_validasi.id_validasi IS NOT NULL,"Telah divalidasi","Belum divalidasi"), '-') AS Validasi,
+    IF(tbl_absen.waktu_absensi IS NOT NULL, tbl_absen.waktu_absensi, "-") AS waktu_absensi
+FROM tbl_siswa
+LEFT JOIN tbl_absen ON tbl_siswa.id_siswa = tbl_absen.id_siswa AND tbl_absen.id_acara = '$id_acara'
+LEFT JOIN tbl_validasi ON tbl_absen.id_absen = tbl_validasi.id_absen
+INNER JOIN tbl_kelas ON tbl_siswa.id_kelas = tbl_kelas.id_kelas
+WHERE tbl_siswa.id_kelas = '$id_kelas';
+
+--insert
+INSERT INTO tbl_absen(id_acara, id_siswa) VALUES ('$id_acara', '$id_siswa');
+
+INSERT INTO tbl_validasi(id_absen, id_guru) VALUES ('$id_absen', '$id_guru');
+
+
+
+--belom bener ini cuman ngetest
+SELECT
+    tbl_siswa.nama_siswa,
+    tbl_kelas.nama_kelas,
+    IF(tbl_validasi.id_validasi IS NOT NULL,"HADIR","TIDAK HADIR") AS kehadiran
+FROM tbl_siswa
+LEFT JOIN tbl_absen ON tbl_siswa.id_siswa = tbl_absen.id_siswa AND tbl_absen.id_acara = '$id_acara'
+LEFT JOIN tbl_validasi ON tbl_absen.id_absen = tbl_validasi.id_absen
+INNER JOIN tbl_kelas ON tbl_siswa.id_kelas = tbl_kelas.id_kelas
+INNER JOIN tbl_acara ON tbl_acara.id_acara = tbl_absen.id_acara;
+
+SELECT
+    tbl_siswa.id_siswa,
+    tbl_siswa.nama_siswa,
+    IF(tbl_validasi.id_absen IN(SELECT tbl_absen.id_absen 
+        FROM tbl_absen
+        INNER JOIN tbl_acara ON tbl_acara.id_acara = tbl_absen.id_acara
+        WHERE tbl_acara.id_acara = '1')
+    ,"HADIR","TIDAK HADIR") AS acara1,
+    IF(tbl_validasi.id_absen IN(SELECT tbl_absen.id_absen 
+        FROM tbl_absen
+        INNER JOIN tbl_acara ON tbl_acara.id_acara = tbl_absen.id_acara
+        WHERE tbl_acara.id_acara = '2')
+    ,"HADIR","TIDAK HADIR") AS acara2
+FROM tbl_siswa
+LEFT JOIN tbl_absen ON tbl_siswa.id_siswa = tbl_absen.id_siswa
+LEFT JOIN tbl_validasi ON tbl_absen.id_absen = tbl_validasi.id_absen;
+
+SELECT
+    tbl_siswa.id_siswa,
+    tbl_siswa.nama_siswa,
+    IF( ,"HADIR","TIDAK HADIR") AS acara1
+FROM tbl_siswa
+LEFT JOIN tbl_absen ON tbl_siswa.id_siswa = tbl_absen.id_siswa
+LEFT JOIN tbl_validasi ON tbl_absen.id_absen = tbl_validasi.id_absen;
